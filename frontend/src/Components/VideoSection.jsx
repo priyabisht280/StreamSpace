@@ -733,7 +733,7 @@ function VideoSection() {
           }
         );
         const { message, likes } = await response.json();
-        if ((message = "Comment liked successfully")) {
+        if ((message === "Comment liked successfully")) {
           setCommentLikes(likes);
         } else {
           setCommentLikes(likes);
