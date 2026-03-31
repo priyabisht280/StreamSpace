@@ -4,14 +4,6 @@
 A feature-rich YouTube clone built using the MERN stack, JWT for authentication, and Firebase Storage for video and file storage. This project aims to replicate the core functionalities of YouTube, allowing users to upload, view, like, comment, and interact with videos.
 
 
-## Demo
-
-
-https://github.com/shubho0908/YouTube-clone-MERN/assets/81776711/72a75a7e-e20b-4639-ac14-13c490329dbf
-
-Or watch the demo [here.](https://youtu.be/CJEoNpLgRRw?si=8F2vfGwuBO03jRsH)
-
-
 ## Features
 
 - User Authentication using JWT.
