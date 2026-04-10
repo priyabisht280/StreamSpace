@@ -5,24 +5,27 @@ const path = require("path");
 const PORT = process.env.PORT || 3000;
 
 const bodyParser = require("body-parser");
-
-const connectDB = require("./Database/database"); // adjust path if needed
+const connectDB = require("./Database/database");
 
 connectDB();
-// Serve static files from the "public" directory
+
+// Serve static files
 app.use(express.static(path.join(__dirname, "public")));
 
 // Middlewares
-app.use(router);
-app.set("view engine", "hbs");
-app.set('views', path.join(__dirname, 'views'));
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// ✅ ADD ROUTES BEFORE LISTEN
 app.get("/", (req, res) => {
   res.send("Backend is running 🚀");
 });
 
+app.use(router);
 
+app.set("view engine", "hbs");
+app.set("views", path.join(__dirname, "views"));
+
+// ✅ START SERVER LAST
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server running on port ${PORT}`);
+});
