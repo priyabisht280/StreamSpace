@@ -34,6 +34,12 @@ import VideoLibraryIcon from "@mui/icons-material/VideoLibrary";
 import WatchLaterIcon from "@mui/icons-material/WatchLater";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import { MdVideoLibrary } from "react-icons/md";
+import HistoryOutlinedIcon from "@mui/icons-material/HistoryOutlined";
+import HistoryIcon from "@mui/icons-material/History";
+import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
+import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { useSelector } from "react-redux";
 
 function LeftPanel() {
@@ -126,6 +132,12 @@ function LeftPanel() {
       selected = "liked-video";
     } else if (currentUrl === "/library") {
       selected = "library";
+    } else if (currentUrl === "/history") {
+      selected = "history";
+    } else if (currentUrl === "/downloads") {
+      selected = "downloads";
+    } else if (currentUrl === "/yourchannel") {
+      selected = "yourchannel";
     } else {
       selected = "other";
     }
@@ -453,6 +465,93 @@ function LeftPanel() {
               />
             )}
             <p>Liked videos</p>
+          </div>
+          <div
+            className={
+              selected === "history"
+                ? `history sec-data ${theme ? "changeBG" : "changeBG-light"}`
+                : "history sec-data"
+            }
+            onClick={() => {
+              if (user?.email) {
+                localStorage.setItem("selected", "history");
+                window.location.href = "/history";
+              } else {
+                setisbtnClicked(true);
+                document.body.classList.add("bg-css");
+              }
+            }}
+          >
+            {selected === "history" ? (
+              <HistoryIcon
+                fontSize="medium"
+                style={{ color: theme ? "white" : "black" }}
+              />
+            ) : (
+              <HistoryOutlinedIcon
+                fontSize="medium"
+                style={{ color: theme ? "white" : "black" }}
+              />
+            )}
+            <p>History</p>
+          </div>
+          <div
+            className={
+              selected === "downloads"
+                ? `downloads sec-data ${theme ? "changeBG" : "changeBG-light"}`
+                : "downloads sec-data"
+            }
+            onClick={() => {
+              if (user?.email) {
+                localStorage.setItem("selected", "downloads");
+                window.location.href = "/downloads";
+              } else {
+                setisbtnClicked(true);
+                document.body.classList.add("bg-css");
+              }
+            }}
+          >
+            {selected === "downloads" ? (
+              <FileDownloadIcon
+                fontSize="medium"
+                style={{ color: theme ? "white" : "black" }}
+              />
+            ) : (
+              <FileDownloadOutlinedIcon
+                fontSize="medium"
+                style={{ color: theme ? "white" : "black" }}
+              />
+            )}
+            <p>Downloads</p>
+          </div>
+          <div
+            className={
+              selected === "yourchannel"
+                ? `yourchannel sec-data ${theme ? "changeBG" : "changeBG-light"}`
+                : "yourchannel sec-data"
+            }
+            onClick={() => {
+              if (user?.email) {
+                localStorage.setItem("selected", "yourchannel");
+                window.location.href = "/yourchannel";
+              } else {
+                setisbtnClicked(true);
+                document.body.classList.add("bg-css");
+              }
+            }}
+          >
+            {selected === "yourchannel" ? (
+              <AccountCircleIcon
+                fontSize="medium"
+                style={{ color: theme ? "white" : "black" }}
+              />
+            ) : (
+              <AccountCircleOutlinedIcon
+                fontSize="medium"
+                style={{ color: theme ? "white" : "black" }}
+              />
+            )}
+            <p>Your channel</p>
           </div>
           <div className="my-playlists-sectionn">
             {PlaylistData &&
@@ -1261,6 +1360,93 @@ function LeftPanel() {
                 />
               )}
               <p>Liked videos</p>
+            </div>
+            <div
+              className={
+                selected === "history"
+                  ? `history sec-data ${theme ? "changeBG" : "changeBG-light"}`
+                  : "history sec-data"
+              }
+              onClick={() => {
+                if (user?.email) {
+                  localStorage.setItem("selected", "history");
+                  window.location.href = "/history";
+                } else {
+                  setisbtnClicked(true);
+                  document.body.classList.add("bg-css");
+                }
+              }}
+            >
+              {selected === "history" ? (
+                <HistoryIcon
+                  fontSize="medium"
+                  style={{ color: theme ? "white" : "black" }}
+                />
+              ) : (
+                <HistoryOutlinedIcon
+                  fontSize="medium"
+                  style={{ color: theme ? "white" : "black" }}
+                />
+              )}
+              <p>History</p>
+            </div>
+            <div
+              className={
+                selected === "downloads"
+                  ? `downloads sec-data ${theme ? "changeBG" : "changeBG-light"}`
+                  : "downloads sec-data"
+              }
+              onClick={() => {
+                if (user?.email) {
+                  localStorage.setItem("selected", "downloads");
+                  window.location.href = "/downloads";
+                } else {
+                  setisbtnClicked(true);
+                  document.body.classList.add("bg-css");
+                }
+              }}
+            >
+              {selected === "downloads" ? (
+                <FileDownloadIcon
+                  fontSize="medium"
+                  style={{ color: theme ? "white" : "black" }}
+                />
+              ) : (
+                <FileDownloadOutlinedIcon
+                  fontSize="medium"
+                  style={{ color: theme ? "white" : "black" }}
+                />
+              )}
+              <p>Downloads</p>
+            </div>
+            <div
+              className={
+                selected === "yourchannel"
+                  ? `yourchannel sec-data ${theme ? "changeBG" : "changeBG-light"}`
+                  : "yourchannel sec-data"
+              }
+              onClick={() => {
+                if (user?.email) {
+                  localStorage.setItem("selected", "yourchannel");
+                  window.location.href = "/yourchannel";
+                } else {
+                  setisbtnClicked(true);
+                  document.body.classList.add("bg-css");
+                }
+              }}
+            >
+              {selected === "yourchannel" ? (
+                <AccountCircleIcon
+                  fontSize="medium"
+                  style={{ color: theme ? "white" : "black" }}
+                />
+              ) : (
+                <AccountCircleOutlinedIcon
+                  fontSize="medium"
+                  style={{ color: theme ? "white" : "black" }}
+                />
+              )}
+              <p>Your channel</p>
             </div>
             <div className="my-playlists-sectionn">
               {PlaylistData &&

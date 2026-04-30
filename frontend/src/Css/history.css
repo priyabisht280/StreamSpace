@@ -1,0 +1,208 @@
+/* History Page Styles */
+.history-container {
+  margin-left: 225px;
+  margin-top: 60px;
+  padding: 30px;
+  background-color: #0f0f0f;
+  color: white;
+  min-height: calc(100vh - 60px);
+}
+
+.history-container.light-mode {
+  background-color: #f9f9f9;
+  color: #000;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.history-header h1 {
+  font-size: 28px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.clear-btn {
+  background-color: transparent;
+  border: 1px solid #aaa;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.clear-btn:hover {
+  background-color: #3d3f43;
+}
+
+.clear-btn.light {
+  color: #000;
+  border-color: #666;
+}
+
+.clear-btn.light:hover {
+  background-color: #e0e0e0;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.history-item {
+  display: flex;
+  gap: 16px;
+  background-color: #212121;
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.history-item:hover {
+  background-color: #3d3f43;
+}
+
+.history-item.light {
+  background-color: #f0f0f0;
+  color: #000;
+}
+
+.history-item.light:hover {
+  background-color: #e0e0e0;
+}
+
+.history-thumbnail {
+  position: relative;
+  flex-shrink: 0;
+  width: 250px;
+  height: 140px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.history-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.history-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.history-details h3 {
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.channel-name {
+  font-size: 13px;
+  color: #aaa;
+  margin: 0;
+}
+
+.view-count {
+  font-size: 13px;
+  color: #aaa;
+  margin: 0;
+}
+
+.remove-history-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #3d3f43;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  color: white;
+}
+
+.remove-history-btn:hover {
+  background-color: #555;
+}
+
+.empty-history {
+  text-align: center;
+  padding: 60px 20px;
+  font-size: 16px;
+  color: #aaa;
+}
+
+.history-item-skeleton {
+  display: flex;
+  gap: 16px;
+  background-color: #212121;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+@media (max-width: 860px) {
+  .history-container {
+    margin-left: 0;
+    margin-top: 60px;
+    padding: 20px;
+  }
+
+  .history-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .history-header h1 {
+    font-size: 24px;
+  }
+
+  .history-thumbnail {
+    width: 200px;
+    height: 112px;
+  }
+
+  .history-item {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .history-container {
+    padding: 16px;
+  }
+
+  .history-header h1 {
+    font-size: 20px;
+  }
+
+  .history-thumbnail {
+    width: 100%;
+    height: 200px;
+  }
+
+  .history-details h3 {
+    font-size: 14px;
+  }
+
+  .channel-name,
+  .view-count {
+    font-size: 12px;
+  }
+}

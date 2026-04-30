@@ -16,6 +16,9 @@ import Content from "./Components/Studio/Content";
 import VideoDetails from "./Components/Studio/VideoDetails";
 import Comments from "./Components/Studio/Comments";
 import VideoComments from "./Components/Studio/VideoComments";
+import History from "./Components/History";
+import Downloads from "./Components/Downloads";
+import YourChannel from "./Components/YourChannel";
 import { ToastContainer } from "react-toastify";
 import { Helmet } from "react-helmet";
 import ytLogo from "./img/icon.png";
@@ -91,6 +94,18 @@ function App() {
           <Route
             path="/library"
             element={user ? <Library /> : <Error />}
+          />
+          <Route
+            path="/history"
+            element={user ? <History /> : <Error />}
+          />
+          <Route
+            path="/downloads"
+            element={user ? <Downloads /> : <Error />}
+          />
+          <Route
+            path="/yourchannel"
+            element={user ? <YourChannel /> : <Error />}
           />
           <Route path="/channel/:id" element={<OtherChannel />} />
           <Route path="/trending" element={<Trending />} />

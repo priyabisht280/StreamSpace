@@ -1,0 +1,392 @@
+/* Your Channel Page Styles */
+.yourchannel-container {
+  margin-left: 225px;
+  margin-top: 60px;
+  background-color: #0f0f0f;
+  color: white;
+  min-height: calc(100vh - 60px);
+}
+
+.yourchannel-container.light-mode {
+  background-color: #f9f9f9;
+  color: #000;
+}
+
+.channel-banner {
+  width: 100%;
+  height: 250px;
+  overflow: hidden;
+  background-color: #212121;
+}
+
+.banner-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.banner-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #065fd4, #003d82);
+}
+
+.channel-info-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 30px;
+  padding: 0 40px 30px 40px;
+  margin-top: -80px;
+  position: relative;
+  z-index: 10;
+}
+
+.channel-profile-container {
+  display: flex;
+  gap: 30px;
+  align-items: flex-end;
+  flex: 1;
+}
+
+.channel-profile-pic {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 5px solid #0f0f0f;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.channel-header-info {
+  padding-bottom: 10px;
+  flex: 1;
+}
+
+.channel-name-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.channel-name-row h1 {
+  font-size: 36px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.verified-badge {
+  width: 24px;
+  height: 24px;
+  color: #065fd4;
+}
+
+.channel-handle {
+  font-size: 16px;
+  color: #aaa;
+  margin: 0 0 12px 0;
+}
+
+.channel-stats {
+  font-size: 16px;
+  color: #aaa;
+  margin: 0;
+}
+
+.edit-channel-btn {
+  background-color: #f1f1f1;
+  color: #000;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 24px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.edit-channel-btn:hover {
+  background-color: #e0e0e0;
+  transform: scale(1.05);
+}
+
+.edit-channel-btn.light {
+  background-color: #000;
+  color: #f1f1f1;
+}
+
+.edit-channel-btn.light:hover {
+  background-color: #222;
+}
+
+.channel-description {
+  padding: 30px 40px;
+  border-top: 1px solid #212121;
+}
+
+.yourchannel-container.light-mode .channel-description {
+  border-top: 1px solid #ddd;
+}
+
+.channel-description h3 {
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0 0 12px 0;
+}
+
+.channel-description p {
+  font-size: 14px;
+  color: #aaa;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.yourchannel-container.light-mode .channel-description p {
+  color: #666;
+}
+
+.channel-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  padding: 30px 40px;
+  border-top: 1px solid #212121;
+}
+
+.yourchannel-container.light-mode .channel-stats-grid {
+  border-top: 1px solid #ddd;
+}
+
+.stat-card {
+  background-color: #212121;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  background-color: #2d2f33;
+}
+
+.stat-card.light {
+  background-color: #f0f0f0;
+  color: #000;
+}
+
+.stat-card.light:hover {
+  background-color: #e8e8e8;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: #aaa;
+  margin: 0 0 8px 0;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.channel-links {
+  padding: 30px 40px;
+  border-top: 1px solid #212121;
+}
+
+.yourchannel-container.light-mode .channel-links {
+  border-top: 1px solid #ddd;
+}
+
+.channel-links h3 {
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0 0 16px 0;
+}
+
+.links-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.link-item {
+  color: #065fd4;
+  text-decoration: none;
+  font-size: 14px;
+  word-break: break-all;
+  transition: color 0.3s ease;
+}
+
+.link-item:hover {
+  color: #003d82;
+  text-decoration: underline;
+}
+
+.yourchannel-container.light-mode .link-item {
+  color: #0051cc;
+}
+
+.yourchannel-container.light-mode .link-item:hover {
+  color: #003d82;
+}
+
+.quick-actions {
+  display: flex;
+  gap: 12px;
+  padding: 30px 40px;
+  flex-wrap: wrap;
+  border-top: 1px solid #212121;
+}
+
+.yourchannel-container.light-mode .quick-actions {
+  border-top: 1px solid #ddd;
+}
+
+.action-btn {
+  background-color: #3d3f43;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.action-btn:hover {
+  background-color: #555;
+  transform: scale(1.05);
+}
+
+.action-btn.light {
+  background-color: #e0e0e0;
+  color: #000;
+}
+
+.action-btn.light:hover {
+  background-color: #d0d0d0;
+}
+
+.no-channel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(100vh - 60px);
+  font-size: 18px;
+  color: #aaa;
+}
+
+.channel-skeleton {
+  padding: 30px;
+}
+
+@media (max-width: 860px) {
+  .yourchannel-container {
+    margin-left: 0;
+  }
+
+  .channel-banner {
+    height: 150px;
+  }
+
+  .channel-info-section {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 20px 30px 30px 30px;
+    margin-top: -60px;
+    gap: 20px;
+  }
+
+  .channel-profile-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+  }
+
+  .channel-profile-pic {
+    width: 120px;
+    height: 120px;
+    margin-top: -40px;
+  }
+
+  .channel-header-info {
+    padding-bottom: 0;
+  }
+
+  .channel-name-row h1 {
+    font-size: 28px;
+  }
+
+  .channel-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 20px 30px;
+  }
+
+  .channel-description,
+  .channel-links,
+  .quick-actions {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .channel-banner {
+    height: 120px;
+  }
+
+  .channel-profile-pic {
+    width: 100px;
+    height: 100px;
+    margin-top: -30px;
+  }
+
+  .channel-name-row h1 {
+    font-size: 22px;
+  }
+
+  .channel-stats-grid {
+    grid-template-columns: 1fr;
+    padding: 20px 16px;
+  }
+
+  .quick-actions {
+    flex-direction: column;
+    padding: 20px 16px;
+  }
+
+  .action-btn {
+    width: 100%;
+  }
+
+  .channel-info-section,
+  .channel-description,
+  .channel-links {
+    padding: 20px 16px;
+  }
+
+  .verified-badge {
+    width: 20px;
+    height: 20px;
+  }
+
+  .channel-handle,
+  .channel-stats {
+    font-size: 14px;
+  }
+
+  .channel-description h3,
+  .channel-links h3 {
+    font-size: 16px;
+  }
+}
