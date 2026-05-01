@@ -2,10 +2,10 @@ import { useState } from "react";
 import "../Css/navbar.css";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { BACKEND_URL } from "../config";
 
 function Signup() {
-  const backendURL = "https://youtube-clone-mern-backend.vercel.app"
-  // const backendURL = "http://localhost:3000";
+  const backendURL = BACKEND_URL;
   const [data, setData] = useState({});
   const [theme, setTheme] = useState(() => {
     const Dark = localStorage.getItem("Dark");
