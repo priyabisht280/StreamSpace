@@ -18,7 +18,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { useSelector } from "react-redux";
 
 function VideoComments() {
-  const backendURL = "https://youtube-clone-mern-backend.vercel.app"
+  const backendURL = "http://localhost:5000";
   // const backendURL = "http://localhost:3000";
   const { id } = useParams();
   const [videoComments, setVideoComments] = useState([]);

@@ -8,7 +8,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import ClearRoundedIcon from "@mui/icons-material/ClearRounded";
 
 function History() {
-  const backendURL = "https://youtube-clone-mern-backend.vercel.app"
+  const backendURL = "http://localhost:5000";
   // const backendURL = "http://localhost:3000";
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);

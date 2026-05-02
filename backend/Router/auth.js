@@ -2,31 +2,26 @@ require("dotenv").config();
 require("../Database/database");
 const express = require("express");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const cookieParser = require("cookie-parser");
 const userData = require("../Models/user");
 const auth = express.Router();
 const nodemailer = require("nodemailer");
-const {
-  generateAccessToken,
-  generateRefreshToken,
-  verifyAccessToken,
-} = require("../lib/tokens");
 
-auth.use(cookieParser());
+// Helper function to verify user credentials (replaces token verification)
+const verifyUser = async (email, password) => {
+  try {
+    const user = await userData.findOne({ email });
+    if (!user) return null;
+    
+    const isValidPassword = await bcrypt.compare(password, user.password);
+    return isValidPassword ? user : null;
+  } catch (error) {
+    return null;
+  }
+};
 
 auth.post("/signup", async (req, res) => {
   try {
     const { name, email, password } = req.body;
-
-    const availableAccessToken = req.cookies?.accessToken;
-    const availableRefreshToken = req.cookies?.refreshToken;
-
-    if (availableAccessToken || availableRefreshToken) {
-      return res.status(400).json({
-        message: "You are already logged in",
-      });
-    }
 
     const user = await userData.findOne({ email });
     if (user) {
@@ -35,6 +30,7 @@ auth.post("/signup", async (req, res) => {
         message: "USER ALREADY EXISTS",
       });
     }
+
     const hashedPassword = await bcrypt.hash(password, 11);
     const saveData = new userData({
       name,
@@ -42,10 +38,6 @@ auth.post("/signup", async (req, res) => {
       password: hashedPassword,
     });
     await saveData.save();
-
-    //Create access token
-    const accessToken = generateAccessToken(saveData);
-    const refreshToken = generateRefreshToken(saveData);
 
     // Nodemailer configuration
     const transporter = nodemailer.createTransport({
@@ -90,23 +82,10 @@ auth.post("/signup", async (req, res) => {
       }
     });
 
-    res
-      .cookie("accessToken", accessToken, {
-        httpOnly: false,
-        sameSite: "None",
-        secure: true,
-        maxAge: 24 * 60 * 60 * 1000,
-      })
-      .cookie("refreshToken", refreshToken, {
-        httpOnly: false,
-        sameSite: "None",
-        secure: true,
-        maxAge: 24 * 60 * 60 * 1000,
-      })
-      .status(201)
-      .json({
-        message: "REGISTRATION SUCCESSFUL",
-      });
+    res.status(201).json({
+      message: "REGISTRATION SUCCESSFUL",
+      user: { name, email } // Return user data instead of tokens
+    });
   } catch (error) {
     res.status(500).json({
       message: error.message,
@@ -117,14 +96,6 @@ auth.post("/signup", async (req, res) => {
 auth.post("/login", async (req, res) => {
   try {
     const { email1, password1 } = req.body;
-    const availableAccessToken = req.cookies?.accessToken;
-    const availableRefreshToken = req.cookies?.refreshToken;
-
-    if (availableAccessToken || availableRefreshToken) {
-      return res.status(400).json({
-        message: "You are already logged in",
-      });
-    }
 
     const user = await userData.findOne({ email: email1 });
     if (!user) {
@@ -133,39 +104,11 @@ auth.post("/login", async (req, res) => {
       });
     }
 
-    const userPassword = user.password;
-    const checkPassword = await bcrypt.compare(password1, userPassword);
+    const checkPassword = await bcrypt.compare(password1, user.password);
     if (checkPassword) {
-      const refreshToken = req.cookies?.refreshToken;
-      if (!refreshToken) {
-        const newRefreshToken = generateRefreshToken(user);
-        const accessToken = generateAccessToken(user);
-        res
-          .cookie("refreshToken", newRefreshToken, {
-            httpOnly: false,
-            sameSite: "None",
-            secure: true,
-            maxAge: 24 * 60 * 60 * 1000,
-          })
-          .cookie("accessToken", accessToken, {
-            httpOnly: false,
-            sameSite: "None",
-            secure: true,
-            maxAge: 24 * 60 * 60 * 1000,
-          });
-        user.refreshToken = newRefreshToken;
-        await user.save();
-      } else {
-        const accessToken = generateAccessToken(user);
-        res.cookie("accessToken", accessToken, {
-          httpOnly: false,
-          sameSite: "None",
-          secure: true,
-          maxAge: 24 * 60 * 60 * 1000,
-        });
-      }
       return res.status(200).json({
         message: "LOGIN SUCCESSFUL",
+        user: { id: user._id, name: user.name, email: user.email } // Return user data
       });
     } else {
       res.status(401).json({
@@ -190,10 +133,14 @@ auth.post("/resetlink", async (req, res) => {
       });
     }
 
-    const resetToken = jwt.sign({ email }, process.env.SECRET_KEY, {
-      expiresIn: "30m",
-    });
-    const resetLink = `${process.env.BACKEND_URL}/${user?._id}/${resetToken}`;
+    // Generate simple random reset code instead
+    const resetCode = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    const resetLink = `${process.env.BACKEND_URL}/reset-password?email=${email}&code=${resetCode}`;
+
+    // Store reset code in user document (you'll need to add this field to your User model)
+    user.resetCode = resetCode;
+    user.resetCodeExpires = Date.now() + 30 * 60 * 1000; // 30 minutes
+    await user.save();
 
     // Nodemailer configuration
     const transporter = nodemailer.createTransport({
@@ -244,48 +191,30 @@ auth.post("/resetlink", async (req, res) => {
   }
 });
 
-auth.get("/logout", (req, res) => {
+auth.post("/userdata", async (req, res) => {
   try {
-    const accessToken = req.cookies?.accessToken;
-    const refreshToken = req.cookies?.refreshToken;
-    if (!accessToken || !refreshToken) {
+    const { email, password } = req.body;
+    
+    if (!email || !password) {
       return res.status(400).json({
         success: false,
-        message: "You are not logged in",
+        message: "Email and password required",
       });
     }
 
-    res.clearCookie("accessToken");
-    res.clearCookie("refreshToken");
-    res.status(200).json({
-      success: true,
-      message: "Logout successful",
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-});
-
-auth.get("/userdata", async (req, res) => {
-  try {
-    const accessToken = req.cookies?.accessToken;
-    const refreshToken = req.cookies?.refreshToken;
-    if (!accessToken || !refreshToken) {
-      return res.status(400).json({
+    const user = await verifyUser(email, password);
+    if (!user) {
+      return res.status(401).json({
         success: false,
-        message: "You are not logged in",
+        message: "Invalid credentials",
       });
     }
 
-    const userdata = verifyAccessToken(accessToken);
-    const user = await userData.findById(userdata?.id).select("-password");
+    const userData = await userData.findById(user._id).select("-password");
 
     res.status(200).json({
       success: true,
-      user,
+      user: userData,
     });
   } catch (error) {
     res.status(500).json({

@@ -1,39 +1,21 @@
-const express = require("express");
-const router = require("./Router/router");
-const app = express();
-const path = require("path");
-const cors = require("cors");
-const PORT = process.env.PORT || 3000;
+require("dotenv").config();
+const mongoose = require("mongoose");
 
-const bodyParser = require("body-parser");
-const connectDB = require("./Database/database");
+const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(
+      `mongodb+srv://${process.env.DB_user}:${process.env.DB_password}@cluster0.edehv0u.mongodb.net/${process.env.DB_name}?retryWrites=true&w=majority`,
+      {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      }
+    );
 
-connectDB();
+    console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
+  } catch (error) {
+    console.error("❌ MongoDB connection error:", error.message);
+    process.exit(1); // stop app if DB fails
+  }
+};
 
-// Serve static files
-app.use(express.static(path.join(__dirname, "public")));
-
-// Middlewares
-app.use(cors({
-  origin: ["http://localhost:5173", "http://localhost:3000", "https://youtube-clone-mern-backend.vercel.app"],
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
-}));
-app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
-// ✅ ADD ROUTES BEFORE LISTEN
-app.get("/", (req, res) => {
-  res.send("Backend is running 🚀");
-});
-
-app.use(router);
-
-app.set("view engine", "hbs");
-app.set("views", path.join(__dirname, "views"));
-
-// ✅ START SERVER LAST
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on port ${PORT}`);
-});
+module.exports = connectDB;

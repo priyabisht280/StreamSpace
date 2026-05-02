@@ -18,7 +18,7 @@ import { BiSearch } from "react-icons/bi";
 import { useSelector } from "react-redux";
 
 function Navbar2() {
-  const backendURL = "https://youtube-clone-mern-backend.vercel.app";
+  const backendURL = "http://localhost:5000";;
   // const backendURL = "http://localhost:3000";
   const [profilePic, setProfilePic] = useState();
   const [userVideos, setUserVideos] = useState([]);

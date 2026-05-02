@@ -9,7 +9,7 @@ import ClearRoundedIcon from "@mui/icons-material/ClearRounded";
 import GetAppIcon from "@mui/icons-material/GetApp";
 
 function Downloads() {
-  const backendURL = "https://youtube-clone-mern-backend.vercel.app"
+  const backendURL = "http://localhost:5000";
   // const backendURL = "http://localhost:3000";
   const [downloads, setDownloads] = useState([]);
   const [loading, setLoading] = useState(true);
