@@ -12,9 +12,10 @@ import Tooltip from "@mui/material/Tooltip";
 import Zoom from "@mui/material/Zoom";
 import { SiYoutubestudio } from "react-icons/si";
 import { useSelector } from "react-redux";
+import { BACKEND_URL } from "../config";
 
 function AccountPop() {
-  const backendURL = "https://youtube-clone-mern-backend.vercel.app"
+  // const backendURL = "https://youtube-clone-mern-backend.vercel.app"
   // const backendURL = "http://localhost:3000";
   const [profile, setProfile] = useState("");
   const [theme, setTheme] = useState(() => {
@@ -37,7 +38,7 @@ function AccountPop() {
       try {
         if (user?.email) {
           const response = await fetch(
-            `${backendURL}/getuserimage/${user?.email}`
+            `${BACKEND_URL}/getuserimage/${user?.email}`
           );
           const { channelIMG } = await response.json();
           setProfile(channelIMG);
@@ -53,7 +54,7 @@ function AccountPop() {
       try {
         if (user?.email) {
           const response = await fetch(
-            `${backendURL}/getchannelid/${user?.email}`
+            `${BACKEND_URL}/getchannelid/${user?.email}`
           );
           const { channelID } = await response.json();
           setChannelID(channelID);
@@ -69,7 +70,7 @@ function AccountPop() {
       try {
         if (user?.email) {
           const response = await fetch(
-            `${backendURL}/getchannel/${user?.email}`
+            `${BACKEND_URL}/getchannel/${user?.email}`
           );
           const { hasChannel } = await response.json();
           setIsChannel(hasChannel);
@@ -82,7 +83,7 @@ function AccountPop() {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch(`${backendURL}/logout`, {
+      const response = await fetch(`${BACKEND_URL}/logout`, {
         credentials: "include",
       });
       const { success, message } = await response.json();

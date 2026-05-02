@@ -685,6 +685,9 @@ function VideoSection() {
     visibility,
   } = matchedVideo;
 
+  const youtubeEmbedUrl = getYouTubeEmbedUrl(videoURL);
+  const isYouTubeVideo = Boolean(youtubeEmbedUrl);
+
   document.title =
     Title && Title !== undefined ? `${Title} - YouTube` : "YouTube";
 
@@ -1019,6 +1022,14 @@ function VideoSection() {
     return formattedDescription.replace(/\n/g, "<br>");
   };
 
+  const getYouTubeEmbedUrl = (url) => {
+    if (!url) return null;
+    const match = url.match(
+      /(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/
+    );
+    return match ? `https://www.youtube.com/embed/${match[1]}` : null;
+  };
+
   if (user?.email !== usermail && visibility === "Private") {
     return (
       <>
@@ -1042,14 +1053,25 @@ function VideoSection() {
       >
         <div className="left-video-section2">
           <div className="videoframe">
-            <video
-              className="play-video"
-              controls
-              ref={videoRef}
-              poster={thumbnailURL}
-            >
-              <source src={videoURL} type="video/mp4" />
-            </video>
+            {isYouTubeVideo ? (
+              <iframe
+                className="play-video"
+                title={Title}
+                src={youtubeEmbedUrl}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                style={{ width: "100%", height: "100%", border: 0 }}
+              />
+            ) : (
+              <video
+                className="play-video"
+                controls
+                ref={videoRef}
+                poster={thumbnailURL}
+              >
+                <source src={videoURL} type="video/mp4" />
+              </video>
+            )}
           </div>
           <p
             className={theme ? "trending-tag" : "trending-tag-light"}

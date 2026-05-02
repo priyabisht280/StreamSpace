@@ -22,10 +22,6 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useSelector } from "react-redux";
 
-// YOUTUBE API CONFIG
-const YOUTUBE_API_KEY = 'AIzaSyB4W-97MCpDfohtHuejVDAe0BR2LsePXQ0';
-const YOUTUBE_API_BASE_URL = 'https://www.googleapis.com/youtube/v3';
-
 function OtherChannel() {
   // FIXED: Use correct backend URL (MongoDB connection)
   const backendURL = "http://localhost:5000"; // ✅ FIXED PORT
@@ -42,7 +38,7 @@ function OtherChannel() {
   const [Top, setTop] = useState("155px");
   const [coverIMG, setCoverIMG] = useState("");
   const [loading, setLoading] = useState(true);
-  const [theme, setTheme] = useState(() => {
+  const [theme] = useState(() => {
     const Dark = localStorage.getItem("Dark");
     return Dark ? JSON.parse(Dark) : true;
   });
@@ -96,36 +92,44 @@ function OtherChannel() {
 
     setYoutubeLoading(true);
     try {
-      const params = new URLSearchParams({
-        part: 'snippet',
-        q: query,
-        type: 'video',
-        maxResults: 12,
-        key: YOUTUBE_API_KEY,
-        pageToken: pageToken
+      console.log("📤 Sending request to backend with query:", query);
+      
+      const response = await fetch(`${backendURL}/youtube/search`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          query: query.trim(),
+          pageToken: pageToken || "",
+        }),
       });
 
-      const response = await fetch(
-        `${YOUTUBE_API_BASE_URL}/search?${params}` // ✅ FIXED: Now using correct base URL
-      );
+      console.log("📥 Backend response status:", response.status);
+
       const data = await response.json();
-      
-      // ✅ FIXED (Error 7): Better error checking and handling.
+      console.log("📥 Backend response data:", data);
+
       if (!response.ok) {
-        const errorMessage = data?.error?.message || 'Search failed';
+        const errorMessage = data?.error || "YouTube search failed";
+        console.error("❌ Backend error:", errorMessage);
         throw new Error(errorMessage);
       }
 
-      if (!data.items) {
-        throw new Error('No videos found');
+      const items = Array.isArray(data.items) ? data.items : [];
+      console.log("✅ Received items count:", items.length);
+
+      if (items.length === 0) {
+        throw new Error("No YouTube videos found for this query");
       }
 
-      setYoutubeVideos(data.items || []);
+      setYoutubeVideos(items);
       setNextPageToken(data.nextPageToken || "");
       setPrevPageToken(data.prevPageToken || "");
       setShowYoutubeSection(true);
+      console.log("✅ Videos loaded successfully");
     } catch (error) {
-      console.error('YouTube Search Error:', error); // ✅ Added console log
+      console.error("❌ YouTube Search Error:", error.message);
       toast.error("Error searching videos: " + error.message, {
         position: "bottom-center",
         theme: theme ? "dark" : "light",
@@ -810,6 +814,11 @@ function OtherChannel() {
               </div>
 
               {/* VIDEO GRID */}
+              {youtubeVideos.length === 0 && !youtubeLoading && youtubeSearchQuery.trim() && (
+                <p style={{ textAlign: "center", color: theme ? "#ccc" : "#555", marginTop: "20px" }}>
+                  No YouTube videos found. Try a different search term.
+                </p>
+              )}
               {youtubeVideos.length > 0 && (
                 <div
                   style={{
@@ -819,83 +828,87 @@ function OtherChannel() {
                     marginTop: "20px",
                   }}
                 >
-                  {youtubeVideos.map((video) => (
-                    // ✅ FIXED (Error 5): Added unique key prop to prevent React warnings.
-                    <div
-                      key={video.id.videoId}
-                      onClick={() => playVideo(video.id.videoId, video.snippet.title)}
-                      style={{
-                        cursor: "pointer",
-                        borderRadius: "8px",
-                        overflow: "hidden",
-                        transition: "transform 0.3s",
-                        backgroundColor: theme ? "#2c2c2c" : "white",
-                      }}
-                      onMouseEnter={(e) =>
-                        (e.currentTarget.style.transform = "scale(1.05)")
-                      }
-                      onMouseLeave={(e) =>
-                        (e.currentTarget.style.transform = "scale(1)")
-                      }
-                    >
-                      <div style={{ position: "relative", overflow: "hidden" }}>
-                        <img
-                          src={video.snippet.thumbnails.medium.url}
-                          alt={video.snippet.title}
-                          style={{
-                            width: "100%",
-                            height: "130px",
-                            objectFit: "cover",
-                            display: "block",
-                          }}
-                        />
-                        <div
-                          style={{
-                            position: "absolute",
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            backgroundColor: "rgba(0, 0, 0, 0.5)",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            opacity: 0,
-                            transition: "opacity 0.3s",
-                          }}
-                          onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
-                          onMouseLeave={(e) => (e.currentTarget.style.opacity = "0")}
-                        >
-                          <span style={{ fontSize: "40px", color: "white" }}>▶</span>
+                  {youtubeVideos.map((video) => {
+                    const videoId = video?.id?.videoId;
+                    const title = video?.snippet?.title || "Untitled video";
+                    return (
+                      <div
+                        key={videoId || title}
+                        onClick={() => videoId && playVideo(videoId, title)}
+                        style={{
+                          cursor: videoId ? "pointer" : "default",
+                          borderRadius: "8px",
+                          overflow: "hidden",
+                          transition: "transform 0.3s",
+                          backgroundColor: theme ? "#2c2c2c" : "white",
+                        }}
+                        onMouseEnter={(e) =>
+                          (e.currentTarget.style.transform = "scale(1.05)")
+                        }
+                        onMouseLeave={(e) =>
+                          (e.currentTarget.style.transform = "scale(1)")
+                        }
+                      >
+                        <div style={{ position: "relative", overflow: "hidden" }}>
+                          <img
+                            src={video.snippet.thumbnails.medium.url}
+                            alt={video.snippet.title}
+                            style={{
+                              width: "100%",
+                              height: "130px",
+                              objectFit: "cover",
+                              display: "block",
+                            }}
+                          />
+                          <div
+                            style={{
+                              position: "absolute",
+                              top: 0,
+                              left: 0,
+                              right: 0,
+                              bottom: 0,
+                              backgroundColor: "rgba(0, 0, 0, 0.5)",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              opacity: 0,
+                              transition: "opacity 0.3s",
+                            }}
+                            onClick={() => videoId && playVideo(videoId, title)}
+                            onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
+                            onMouseLeave={(e) => (e.currentTarget.style.opacity = "0")}
+                          >
+                            <span style={{ fontSize: "40px", color: "white" }}>▶</span>
+                          </div>
+                        </div>
+                        <div style={{ padding: "10px" }}>
+                          <p
+                            style={{
+                              fontSize: "13px",
+                              fontWeight: "500",
+                              color: theme ? "white" : "black",
+                              lineHeight: "1.3",
+                              marginBottom: "5px",
+                              display: "-webkit-box",
+                              WebkitLineClamp: 2,
+                              WebkitBoxOrient: "vertical",
+                              overflow: "hidden",
+                            }}
+                          >
+                            {video.snippet.title}
+                          </p>
+                          <p
+                            style={{
+                              fontSize: "12px",
+                              color: theme ? "#aaa" : "#606060",
+                            }}
+                          >
+                            {video.snippet.channelTitle}
+                          </p>
                         </div>
                       </div>
-                      <div style={{ padding: "10px" }}>
-                        <p
-                          style={{
-                            fontSize: "13px",
-                            fontWeight: "500",
-                            color: theme ? "white" : "black",
-                            lineHeight: "1.3",
-                            marginBottom: "5px",
-                            display: "-webkit-box",
-                            WebkitLineClamp: 2,
-                            WebkitBoxOrient: "vertical",
-                            overflow: "hidden",
-                          }}
-                        >
-                          {video.snippet.title}
-                        </p>
-                        <p
-                          style={{
-                            fontSize: "12px",
-                            color: theme ? "#aaa" : "#606060",
-                          }}
-                        >
-                          {video.snippet.channelTitle}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
 

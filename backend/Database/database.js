@@ -1,10 +1,8 @@
-// or wherever your MongoDB connection file is
-
+require("dotenv").config();
 const mongoose = require('mongoose');
 
 const connectDB = async () => {
   try {
-    // ✅ FIXED: Proper connection with error handling
     const conn = await mongoose.connect(process.env.MONGODB_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,

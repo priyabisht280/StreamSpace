@@ -10,6 +10,7 @@ import nothing from "../img/nothing.png";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useSelector } from "react-redux";
+import { BACKEND_URL } from "../config";
 
 function Trending() {
   const backendURL = "http://localhost:5000";;
@@ -50,7 +51,7 @@ function Trending() {
     const getTrending = async () => {
       try {
         const response = await fetch(
-          "https://youtube-clone-mern-backend.vercel.app/gettrending"
+          `${BACKEND_URL}/gettrending`
         );
         const trending = await response.json();
         if (trending !== "NO DATA") {

@@ -17,7 +17,7 @@ import Signin from "./Signin";
 import { useLocation } from "react-router-dom";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import CodeIcon from "@mui/icons-material/Code";
+// import CodeIcon from "@mui/icons-material/Code";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import { GoHome } from "react-icons/go";
 import { GoHomeFill } from "react-icons/go";
@@ -58,7 +58,7 @@ function LeftPanel() {
   const [savedPlaylist, setSavedPlaylist] = useState([]);
   const [togglepanel, setTogglePannel] = useState(false);
   const [closePanel, setClosePanel] = useState(false);
-  const [theme, setTheme] = useState(() => {
+  const [theme] = useState(() => {
     const Dark = localStorage.getItem("Dark");
     return Dark ? JSON.parse(Dark) : true;
   });

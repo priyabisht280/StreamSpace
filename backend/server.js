@@ -1,21 +1,23 @@
 require("dotenv").config();
-const mongoose = require("mongoose");
+const express = require("express");
+const connectDB = require("./Database/database");
+const router = require("./Router/router");
 
-const connectDB = async () => {
-  try {
-    const conn = await mongoose.connect(
-      `mongodb+srv://${process.env.DB_user}:${process.env.DB_password}@cluster0.edehv0u.mongodb.net/${process.env.DB_name}?retryWrites=true&w=majority`,
-      {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      }
-    );
+const app = express();
 
-    console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
-  } catch (error) {
-    console.error("❌ MongoDB connection error:", error.message);
-    process.exit(1); // stop app if DB fails
-  }
-};
+// Connect to database
+connectDB();
 
-module.exports = connectDB;
+// Use the router
+app.use("/", router);
+
+// For Vercel deployment
+module.exports = app;
+
+// For local development
+if (require.main === module) {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
