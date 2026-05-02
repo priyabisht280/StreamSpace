@@ -21,9 +21,15 @@ import { RiUserSettingsLine } from "react-icons/ri";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useSelector } from "react-redux";
+
+// YOUTUBE API CONFIG
+const YOUTUBE_API_KEY = 'AIzaSyB4W-97MCpDfohtHuejVDAe0BR2LsePXQ0';
+const YOUTUBE_API_BASE_URL = 'https://www.googleapis.com/youtube/v3';
+
 function OtherChannel() {
-  const backendURL = "https://youtube-clone-mern-backend.vercel.app"
-  // const backendURL = "http://localhost:3000";
+  // FIXED: Use correct backend URL (MongoDB connection)
+  // const backendURL = "https://youtube-clone-mern-backend.vercel.app"
+  const backendURL = "http://localhost:5000"; // ✅ FIXED PORT
   const { id } = useParams();
   const [Email, setEmail] = useState();
   const [channelName, setChannelname] = useState();
@@ -41,6 +47,16 @@ function OtherChannel() {
     const Dark = localStorage.getItem("Dark");
     return Dark ? JSON.parse(Dark) : true;
   });
+
+  // YOUTUBE STATES
+  const [youtubeSearchQuery, setYoutubeSearchQuery] = useState("");
+  const [youtubeVideos, setYoutubeVideos] = useState([]);
+  const [selectedVideo, setSelectedVideo] = useState(null);
+  const [youtubeLoading, setYoutubeLoading] = useState(false);
+  const [nextPageToken, setNextPageToken] = useState("");
+  const [prevPageToken, setPrevPageToken] = useState("");
+  const [showYoutubeSection, setShowYoutubeSection] = useState(false);
+
   const User = useSelector((state) => state.user.user);
   const { user } = User;
   //TOAST FUNCTIONS
@@ -56,6 +72,68 @@ function OtherChannel() {
       progress: undefined,
       theme: theme ? "dark" : "light",
     });
+
+  // YOUTUBE FUNCTIONS
+  const playVideo = (videoId, videoTitle) => { // ✅ Removed async
+    setSelectedVideo({
+      id: videoId,
+      title: videoTitle
+    });
+  };
+
+  const closeVideoPlayer = () => {
+    setSelectedVideo(null);
+  };
+
+  const searchYoutubeVideos = async (query, pageToken = "") => {
+    if (!query.trim()) {
+      toast.error("Please enter a search query", {
+        position: "bottom-center",
+        theme: theme ? "dark" : "light",
+      });
+      return;
+    }
+
+    setYoutubeLoading(true);
+    try {
+      const params = new URLSearchParams({
+        part: 'snippet',
+        q: query,
+        type: 'video',
+        maxResults: 12,
+        key: YOUTUBE_API_KEY,
+        pageToken: pageToken
+      });
+
+      const response = await fetch(
+        `${YOUTUBE_API_BASE_URL}/search?${params}` // ✅ FIXED: Now using correct base URL
+      );
+      const data = await response.json();
+      
+      // ✅ FIXED: Better error checking
+      if (!response.ok) {
+        const errorMessage = data?.error?.message || 'Search failed';
+        throw new Error(errorMessage);
+      }
+
+      if (!data.items) {
+        throw new Error('No videos found');
+      }
+
+      setYoutubeVideos(data.items || []);
+      setNextPageToken(data.nextPageToken || "");
+      setPrevPageToken(data.prevPageToken || "");
+      setShowYoutubeSection(true);
+    } catch (error) {
+      console.error('YouTube Search Error:', error); // ✅ Added console log
+      toast.error("Error searching videos: " + error.message, {
+        position: "bottom-center",
+        theme: theme ? "dark" : "light",
+      });
+    } finally {
+      setYoutubeLoading(false);
+    }
+  };
 
   //USE EFFECTS
 
@@ -647,6 +725,14 @@ function OtherChannel() {
                   ABOUT
                 </p>
               )}
+              {/* YOUTUBE SEARCH TAB */}
+              <p
+                className={theme ? "channel-home" : "channel-home text-light-mode2"}
+                onClick={() => setShowYoutubeSection(!showYoutubeSection)}
+                style={{ cursor: "pointer", marginLeft: "20px" }}
+              >
+                YOUTUBE SEARCH
+              </p>
             </div>
           </div>
           <br />
@@ -657,6 +743,265 @@ function OtherChannel() {
                 : "seperate seperate-new seperate-light"
             }
           />
+
+          {/* YOUTUBE SEARCH SECTION */}
+          {showYoutubeSection && (
+            <div
+              style={{
+                padding: "20px",
+                marginBottom: "30px",
+                backgroundColor: theme ? "#212121" : "#f9f9f9",
+                borderRadius: "8px",
+              }}
+            >
+              <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
+                <input
+                  type="text"
+                  value={youtubeSearchQuery}
+                  onChange={(e) => setYoutubeSearchQuery(e.target.value)}
+                  onKeyPress={(e) =>
+                    e.key === "Enter" && searchYoutubeVideos(youtubeSearchQuery)
+                  }
+                  placeholder="Search YouTube videos..."
+                  style={{
+                    flex: 1,
+                    padding: "10px 15px",
+                    borderRadius: "4px",
+                    border: theme ? "1px solid #444" : "1px solid #ddd",
+                    backgroundColor: theme ? "#333" : "white",
+                    color: theme ? "white" : "black",
+                    fontSize: "14px",
+                  }}
+                />
+                <button
+                  onClick={() => searchYoutubeVideos(youtubeSearchQuery)}
+                  disabled={youtubeLoading}
+                  style={{
+                    padding: "10px 20px",
+                    backgroundColor: "#e74c3c",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "4px",
+                    cursor: youtubeLoading ? "not-allowed" : "pointer",
+                    opacity: youtubeLoading ? 0.6 : 1,
+                    fontSize: "14px",
+                    fontWeight: "bold",
+                  }}
+                >
+                  {youtubeLoading ? "Searching..." : "Search"}
+                </button>
+              </div>
+
+              {/* VIDEO GRID */}
+              {youtubeVideos.length > 0 && (
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+                    gap: "15px",
+                    marginTop: "20px",
+                  }}
+                >
+                  {youtubeVideos.map((video) => (
+                    <div
+                      key={video.id.videoId}
+                      onClick={() => playVideo(video.id.videoId, video.snippet.title)}
+                      style={{
+                        cursor: "pointer",
+                        borderRadius: "8px",
+                        overflow: "hidden",
+                        transition: "transform 0.3s",
+                        backgroundColor: theme ? "#2c2c2c" : "white",
+                      }}
+                      onMouseEnter={(e) =>
+                        (e.currentTarget.style.transform = "scale(1.05)")
+                      }
+                      onMouseLeave={(e) =>
+                        (e.currentTarget.style.transform = "scale(1)")
+                      }
+                    >
+                      <div style={{ position: "relative", overflow: "hidden" }}>
+                        <img
+                          src={video.snippet.thumbnails.medium.url}
+                          alt={video.snippet.title}
+                          style={{
+                            width: "100%",
+                            height: "130px",
+                            objectFit: "cover",
+                            display: "block",
+                          }}
+                        />
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            backgroundColor: "rgba(0, 0, 0, 0.5)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            opacity: 0,
+                            transition: "opacity 0.3s",
+                          }}
+                          onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
+                          onMouseLeave={(e) => (e.currentTarget.style.opacity = "0")}
+                        >
+                          <span style={{ fontSize: "40px", color: "white" }}>▶</span>
+                        </div>
+                      </div>
+                      <div style={{ padding: "10px" }}>
+                        <p
+                          style={{
+                            fontSize: "13px",
+                            fontWeight: "500",
+                            color: theme ? "white" : "black",
+                            lineHeight: "1.3",
+                            marginBottom: "5px",
+                            display: "-webkit-box",
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden",
+                          }}
+                        >
+                          {video.snippet.title}
+                        </p>
+                        <p
+                          style={{
+                            fontSize: "12px",
+                            color: theme ? "#aaa" : "#606060",
+                          }}
+                        >
+                          {video.snippet.channelTitle}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* PAGINATION */}
+              {youtubeVideos.length > 0 && (
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "10px",
+                    justifyContent: "center",
+                    marginTop: "20px",
+                  }}
+                >
+                  <button
+                    onClick={() => searchYoutubeVideos(youtubeSearchQuery, prevPageToken)}
+                    disabled={!prevPageToken || youtubeLoading}
+                    style={{
+                      padding: "8px 16px",
+                      backgroundColor: !prevPageToken ? "#555" : "#3498db",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "4px",
+                      cursor: !prevPageToken ? "not-allowed" : "pointer",
+                      opacity: !prevPageToken ? 0.5 : 1,
+                    }}
+                  >
+                    Previous
+                  </button>
+                  <button
+                    onClick={() => searchYoutubeVideos(youtubeSearchQuery, nextPageToken)}
+                    disabled={!nextPageToken || youtubeLoading}
+                    style={{
+                      padding: "8px 16px",
+                      backgroundColor: !nextPageToken ? "#555" : "#3498db",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "4px",
+                      cursor: !nextPageToken ? "not-allowed" : "pointer",
+                      opacity: !nextPageToken ? 0.5 : 1,
+                    }}
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* VIDEO PLAYER MODAL */}
+          {selectedVideo && (
+            <div
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: "rgba(0, 0, 0, 0.8)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                zIndex: 1000,
+                padding: "20px",
+              }}
+              onClick={closeVideoPlayer}
+            >
+              <div
+                style={{
+                  backgroundColor: theme ? "#212121" : "white",
+                  borderRadius: "8px",
+                  maxWidth: "900px",
+                  width: "100%",
+                  boxShadow: "0 4px 20px rgba(0, 0, 0, 0.5)",
+                }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    padding: "16px 20px",
+                    borderBottom: theme ? "1px solid #444" : "1px solid #eee",
+                  }}
+                >
+                  <h3
+                    style={{
+                      color: theme ? "white" : "black",
+                      margin: 0,
+                      fontSize: "16px",
+                      fontWeight: "600",
+                    }}
+                  >
+                    {selectedVideo.title}
+                  </h3>
+                  <button
+                    onClick={closeVideoPlayer}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      fontSize: "24px",
+                      color: theme ? "white" : "black",
+                      cursor: "pointer",
+                    }}
+                  >
+                    ×
+                  </button>
+                </div>
+                <div style={{ padding: "20px" }}>
+                  <iframe
+                    width="100%"
+                    height="500"
+                    src={`https://www.youtube.com/embed/${selectedVideo.id}`}
+                    title={selectedVideo.title}
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    style={{ borderRadius: "4px" }}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
           {Section === "Home" || Section === "" ? (
             <ChannelHome newmail={Email} />
           ) : (
