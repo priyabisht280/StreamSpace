@@ -39,53 +39,49 @@ auth.post("/signup", async (req, res) => {
     });
     await saveData.save();
 
-    // Nodemailer configuration
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL,
-        pass: process.env.PASSWORD,
-      },
-    });
-
-    const mailOptions = {
-      from: "admin@shubho.youtube.app",
-      to: email,
-      subject: "Welcome to Shubho's YouTube Clone!",
-      html: `
-        <div style="font-family: Arial, sans-serif; background-color: #f5f5f5; padding: 20px;">
-          <h1 style="color: #333;">Welcome to Shubho's YouTube Clone!</h1>
-          <p style="color: #555;">Hello ${name},</p>
-          <p style="color: #555;">We are excited to have you as a new member of our community! Thank you for joining.</p>
-          <p style="color: #555;">Feel free to explore our platform and start sharing your videos with the world.</p>
-          <p style="color: #555;">If you have any questions or need assistance, don't hesitate to reach out to us.</p>
-          <p style="color: #555;">Best regards,</p>
-          <p style="color: #555;">Shubhojeet Bera</p>
-        </div>
-      `,
-    };
-
-    // Send the email
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.error(error);
-        return res.status(400).json({
-          success: false,
-          message: "Error sending email",
-        });
-      } else {
-        console.log("Email sent: " + info.response);
-        res.status(200).json({
-          success: true,
-          message: "Registration mail sent to your email",
-        });
-      }
-    });
-
+    // Send success response immediately after saving user
     res.status(201).json({
       message: "REGISTRATION SUCCESSFUL",
-      user: { name, email } // Return user data instead of tokens
+      user: { name, email }
     });
+
+    // Send welcome email asynchronously (don't wait for it)
+    try {
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.EMAIL,
+          pass: process.env.PASSWORD,
+        },
+      });
+
+      const mailOptions = {
+        from: "chandanarya563@gmail.com",
+        to: email,
+        subject: "Welcome to Our You-Tube Clone!",
+        html: `
+          <div style="font-family: Arial, sans-serif; background-color: #f5f5f5; padding: 20px;">
+            <h1 style="color: #333;">Welcome to StreamSpace.!</h1>
+            <p style="color: #555;">Hello ${name},</p>
+            <p style="color: #555;">We are excited to have you as a new member of our community! Thank you for joining.</p>
+            <p style="color: #555;">Feel free to explore our platform and start sharing your videos with the world.</p>
+            <p style="color: #555;">If you have any questions or need assistance, don't hesitate to reach out to us.</p>
+            <p style="color: #555;">Best regards,</p>
+            <p style="color: #555;">Team StreamSpace</p>
+          </div>
+        `,
+      };
+
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error("Email sending failed:", error);
+        } else {
+          console.log("Welcome email sent: " + info.response);
+        }
+      });
+    } catch (emailError) {
+      console.error("Email setup error:", emailError);
+    }
   } catch (error) {
     res.status(500).json({
       message: error.message,
@@ -152,7 +148,7 @@ auth.post("/resetlink", async (req, res) => {
     });
 
     const mailOptions = {
-      from: "admin@shubho.youtube.app",
+      from: "chandanarya563@gmail.com",
       to: email,
       subject: "Password Reset Link",
       html: `
@@ -165,7 +161,7 @@ auth.post("/resetlink", async (req, res) => {
           </p>
           <p style="color: #555;">This link is only valid for 30 minutes.</p>
           <p style="color: #555;">If you didn't request a password reset, please ignore this email.</p>
-          <p style="color: #888;">Best regards,<br/>Shubhojeet Bera</p>
+          <p style="color: #888;">Best regards,<br/>Team StreamSpace</p>
         </div>
       `,
     };

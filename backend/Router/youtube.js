@@ -16,7 +16,8 @@ router.post("/youtube/search", async (req, res) => {
 
     console.log("✅ YouTube API key loaded:", YOUTUBE_API_KEY.substring(0, 10) + "...");
 
-    const { query, pageToken } = req.body;
+    const query = req.body.query || req.body.searchQuery;
+    const pageToken = req.body.pageToken || req.body.page_token || "";
 
     if (!query || !query.trim()) {
       return res.status(400).json({
